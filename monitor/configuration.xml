@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<exhibit>
+	<inputfile name = "a.csv" time = "09:30" grace_period = "30">
+		<structure>
+			<field name = "serialNum" type = "number"/>
+			<field name = "firstName" type = "text"/>
+			<field name = "lastName" type = "text"/>
+			<field name = "DOB" type = "date"/>
+			<field name = "DOD" type = "date"/>
+			<field name = "loanAmt" type = "number"/>
+			<field name = "address" type = "text"/>
+		</structure>
+	</inputfile>
+	<inputfile name = "b.csv" time = "11:00" grace_period = "20">
+		<structure>
+			<field name = "serialNum" type = "number"/>
+			<field name = "firstName" type = "text"/>
+			<field name = "lastName" type = "text"/>
+			<field name = "DOB" type = "date"/>
+			<field name = "DOD" type = "date"/>
+			<field name = "loanAmt" type = "number"/>
+			<field name = "address" type = "text"/>
+		</structure>
+	</inputfile>
+	
+	<outputfile name = "x.csv" time = "14:00">
+		<dependency file = "a.csv"/>
+		<dependency file = "b.csv"/>
+	</outputfile>
+</exhibit>

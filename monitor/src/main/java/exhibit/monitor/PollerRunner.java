@@ -8,14 +8,15 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PollerRunner implements Runnable {
 	private static final String INPUT_FOLDER_DIR = "D:/ExhibitMonitorData/Input";
 	private static final String PROCESS_FOLDER_DIR = "D:/ExhibitMonitorData/Process";
-	private static final DateFormat INPUT_DF = new SimpleDateFormat("dd/MM/yyyy");
-	private static final DateFormat LAST_MODIFIED_DR = new SimpleDateFormat("HH:mm");
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm");
 	private Logger logger;
 
 	public PollerRunner() {
@@ -30,7 +31,8 @@ public class PollerRunner implements Runnable {
 				if (fileEntry.isFile()) {
 					if (isValidFile(fileEntry) && !isDuplicate(fileEntry) && isOnTime(fileEntry)) {
 						moveFile(fileEntry.getName());
-						// Thread worker = new Thread(new WorkerRunner());
+						// Thread worker = new Thread(new
+						// WorkerRunner(fileEntry.getName()));
 						// worker.start();
 					} else {
 						File inputFile = new File(INPUT_FOLDER_DIR + "/" + fileEntry.getName());
@@ -49,22 +51,25 @@ public class PollerRunner implements Runnable {
 	private boolean isDuplicate(File file) {
 		if (ApplicationContext.inputFileMap.isEmpty()) {
 			Calendar cal = Calendar.getInstance();
-			ApplicationContext.inputFileMap.put(file.getName(), INPUT_DF.format(cal.getTime()));
+			ApplicationContext.inputFileMap.put(file.getName(), DATE_FORMAT.format(cal.getTime()));
 			return false;
 		}
 
 		Calendar cal = Calendar.getInstance();
 		if (ApplicationContext.inputFileMap.containsKey(file.getName())) {
-			return ApplicationContext.inputFileMap.get(file.getName()).equals(INPUT_DF.format(cal.getTime()));
+			return ApplicationContext.inputFileMap.get(file.getName()).equals(DATE_FORMAT.format(cal.getTime()));
 		}
-		ApplicationContext.inputFileMap.put(file.getName(), INPUT_DF.format(cal.getTime()));
+		ApplicationContext.inputFileMap.put(file.getName(), DATE_FORMAT.format(cal.getTime()));
 		return false;
 	}
 
 	private boolean isOnTime(File file) {
 		try {
-			String lastModifiedTimeStr = LAST_MODIFIED_DR.format(file.lastModified());
-			long lastModifiedTime = new SimpleDateFormat("HH:mm").parse(lastModifiedTimeStr).getTime();
+			// get last modified time string
+			String lastModifiedStr = TIME_FORMAT.format(file.lastModified());
+
+			TIME_FORMAT.setTimeZone(TimeZone.getTimeZone("GMT"));
+			Date lastModifiedTime = TIME_FORMAT.parse(lastModifiedStr);
 
 			Iterator<Entry<FileDetails, Map<String, String>>> iterator = ApplicationContext.xmlMap.entrySet()
 					.iterator();
@@ -72,8 +77,9 @@ public class PollerRunner implements Runnable {
 				Entry<FileDetails, Map<String, String>> element = iterator.next();
 				FileDetails details = element.getKey();
 				if (details.getName().equals(file.getName()) && details.getType().equals("input")) {
-					Date xmlTime = new SimpleDateFormat("HH:mm").parse(details.getTime());
-					if (xmlTime.getTime() - lastModifiedTime > 0) {
+					Date xmlTime = TIME_FORMAT.parse(details.getTime());
+					Date xmlGracePeriod = TIME_FORMAT.parse("00:" + details.getGracePeriod());
+					if (xmlTime.getTime() + xmlGracePeriod.getTime() - lastModifiedTime.getTime() >= 0) {
 						return true;
 					}
 				}

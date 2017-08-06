@@ -4,10 +4,10 @@ public class FileDetails implements Comparable<FileDetails> {
 	private String name;
 	private String type;
 	private String time;
-	private int gracePeriod;
+	private String gracePeriod;
 
 	// for input files
-	public FileDetails(String name, String type, String time, int gracePeriod) {
+	public FileDetails(String name, String type, String time, String gracePeriod) {
 		this.name = name;
 		this.type = type;
 		this.time = time;
@@ -19,7 +19,7 @@ public class FileDetails implements Comparable<FileDetails> {
 		this.name = name;
 		this.type = type;
 		this.time = time;
-		this.gracePeriod = 0;
+		this.gracePeriod = null;
 	}
 
 	// for checking if file is valid
@@ -27,7 +27,7 @@ public class FileDetails implements Comparable<FileDetails> {
 		this.name = name;
 		this.type = type;
 		this.time = null;
-		this.gracePeriod = 0;
+		this.gracePeriod = null;
 	}
 
 	public String getName() {
@@ -42,7 +42,7 @@ public class FileDetails implements Comparable<FileDetails> {
 		return this.time;
 	}
 
-	public int getGracePeriod() {
+	public String getGracePeriod() {
 		return this.gracePeriod;
 	}
 

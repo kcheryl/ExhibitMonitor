@@ -45,8 +45,7 @@ public class XMLParser {
 				if (inputNode.getNodeType() == Node.ELEMENT_NODE) {
 					Element inputElement = (Element) inputNode;
 					FileDetails details = new FileDetails(inputElement.getAttribute("name"), "input",
-							inputElement.getAttribute("time"),
-							Integer.parseInt(inputElement.getAttribute("grace_period")));
+							inputElement.getAttribute("time"), inputElement.getAttribute("grace_period"));
 
 					NodeList structureList = inputElement.getElementsByTagName("structure");
 					NodeList children = structureList.item(0).getChildNodes();

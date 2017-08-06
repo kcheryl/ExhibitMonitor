@@ -8,12 +8,19 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PollerRunner implements Runnable {
 	private static final String inputFolderDir = "D:/ExhibitMonitorData/Input";
 	private static final String processFolderDir = "D:/ExhibitMonitorData/Process";
 	private static final DateFormat inputDF = new SimpleDateFormat("dd/MM/yyyy");
 	private static final DateFormat lastModifiedDF = new SimpleDateFormat("HH:mm");
+	private Logger logger;
+
+	public PollerRunner() {
+		logger = Logger.getLogger("Exception");
+	}
 
 	@Override
 	public void run() {
@@ -73,7 +80,8 @@ public class PollerRunner implements Runnable {
 			}
 			return false;
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.FINEST, e.getMessage(), e);
+			// e.printStackTrace();
 		}
 		return false;
 	}
@@ -84,7 +92,8 @@ public class PollerRunner implements Runnable {
 			inputFile.renameTo(new File(processFolderDir + "/" + inputFile.getName()));
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.FINEST, e.getMessage(), e);
+			// e.printStackTrace();
 		}
 	}
 }

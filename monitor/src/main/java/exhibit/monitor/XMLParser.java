@@ -2,6 +2,7 @@ package exhibit.monitor;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -60,7 +61,7 @@ public class XMLParser {
 							}
 							// if details is new
 							else {
-								Map<String, String> attrMap = new HashMap<>();
+								Map<String, String> attrMap = new LinkedHashMap<>();
 								attrMap.put(childElement.getAttribute("name"), childElement.getAttribute("type"));
 								ApplicationContext.xmlMap.put(details, attrMap);
 							}
@@ -90,7 +91,7 @@ public class XMLParser {
 							}
 							// if details is new
 							else {
-								Map<String, String> attrMap = new HashMap<>();
+								Map<String, String> attrMap = new LinkedHashMap<>();
 								attrMap.put(childElement.getAttribute("file"), null);
 								ApplicationContext.xmlMap.put(details, attrMap);
 							}

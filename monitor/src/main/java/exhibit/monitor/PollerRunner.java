@@ -30,11 +30,14 @@ public class PollerRunner implements Runnable {
 			for (final File fileEntry : inputFolder.listFiles()) {
 				if (fileEntry.isFile()) {
 					if (isValidFile(fileEntry) && !isDuplicate(fileEntry) && isOnTime(fileEntry)) {
+						System.out.println("[Poller] Moving file.. " + fileEntry.getName());
 						moveFile(fileEntry.getName());
-						// Thread worker = new Thread(new
-						// WorkerRunner(fileEntry.getName()));
-						// worker.start();
+
+						System.out.println("[Poller] Start worker thread.. " + fileEntry.getName());
+						Thread worker = new Thread(new WorkerRunner(fileEntry.getName()));
+						worker.start();
 					} else {
+						System.out.println("[Poller] Deleting file.. " + fileEntry.getName());
 						File inputFile = new File(INPUT_FOLDER_DIR + "/" + fileEntry.getName());
 						inputFile.delete();
 					}

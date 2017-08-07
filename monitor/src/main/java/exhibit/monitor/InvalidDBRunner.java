@@ -25,6 +25,7 @@ public class InvalidDBRunner implements Runnable {
 					+ " record VARCHAR(255), " + " PRIMARY KEY ( id ))";
 			stmt = conn.prepareStatement(sql);
 			stmt.execute();
+			stmt.closeOnCompletion();
 
 			synchronized (ApplicationContext.invalidRecords) {
 				while (ApplicationContext.invalidRecords.isEmpty()) {
@@ -43,14 +44,15 @@ public class InvalidDBRunner implements Runnable {
 					stmt.setInt(3, record.getRecordNum());
 					stmt.setString(4, record.getRecord());
 					stmt.execute();
+					stmt.closeOnCompletion();
 				}
 			}
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
 			// e.printStackTrace();
 		} finally {
-			close(stmt);
 			close(conn);
+			// close(stmt);
 		}
 
 	}
@@ -78,5 +80,4 @@ public class InvalidDBRunner implements Runnable {
 			// e.printStackTrace();
 		}
 	}
-
 }

@@ -41,7 +41,13 @@ public class WorkerRunner implements Runnable {
 					count++;
 				}
 				br.close();
+
 				// notify DB thread
+				synchronized (ApplicationContext.validRecords) {
+					System.out.println("[Worker] Notifying valid database thread.. " + fileName);
+					ApplicationContext.validRecords.notify();
+				}
+
 			} catch (Exception e) {
 				logger.log(Level.FINEST, e.getMessage(), e);
 				// e.printStackTrace();
@@ -62,7 +68,13 @@ public class WorkerRunner implements Runnable {
 					count++;
 				}
 				br.close();
+
 				// notify DB thread
+				synchronized (ApplicationContext.invalidRecords) {
+					System.out.println("[Worker] Notifying invalid database thread.. " + fileName);
+					ApplicationContext.invalidRecords.notify();
+				}
+
 			} catch (Exception e) {
 				logger.log(Level.FINEST, e.getMessage(), e);
 				// e.printStackTrace();
@@ -79,24 +91,54 @@ public class WorkerRunner implements Runnable {
 			FileDetails details = new FileDetails(fileName, "input");
 			Map<String, String> fieldMap = ApplicationContext.xmlMap.get(details);
 
-			if (csvData.length == fieldMap.size()) {
-				Iterator<Entry<String, String>> iterator = fieldMap.entrySet().iterator();
-				int i = 0;
-				int count = 0;
-				while (iterator.hasNext()) {
-					Entry<String, String> element = iterator.next();
-					if (csvData[i].equalsIgnoreCase(element.getKey())) {
-						count++;
-					}
-					i++;
+			if (csvData.length != fieldMap.size()) {
+				return false;
+			}
+
+			Iterator<Entry<String, String>> iterator = fieldMap.entrySet().iterator();
+			int i = 0;
+			int count = 0;
+			while (iterator.hasNext()) {
+				Entry<String, String> element = iterator.next();
+				if (csvData[i].equalsIgnoreCase(element.getKey())) {
+					count++;
 				}
-				if (count == csvData.length) {
-					System.out.println("[Worker] Valid record.. " + fileName);
-					return true;
+				i++;
+			}
+			if (count == csvData.length) {
+				while ((line = br.readLine()) != null) {
+					String[] fieldArr = line.split(COMMA);
+					if (fieldArr.length != csvData.length) {
+						return false;
+					}
+					int fieldCount = 0;
+					Iterator<Entry<String, String>> iteratorContent = fieldMap.entrySet().iterator();
+
+					while (iteratorContent.hasNext()) {
+						Entry<String, String> element = iteratorContent.next();
+						try {
+							if (element.getValue().equalsIgnoreCase("integer")) {
+								int number = Integer.parseInt(fieldArr[fieldCount]);
+
+							}
+							if (element.getValue().equalsIgnoreCase("double")) {
+								double number = Double.parseDouble(fieldArr[fieldCount]);
+							}
+							if (element.getValue().equalsIgnoreCase("date")) {
+								Date date = DATE_FORMAT.parse(fieldArr[fieldCount]);
+								DATE_FORMAT.format(date);
+							}
+						} catch (Exception e) {
+							logger.log(Level.FINEST, e.getMessage(), e);
+							// e.printStackTrace();
+							return false;
+						} finally {
+							fieldCount++;
+						}
+					}
 				}
 			}
-			System.out.println("[Worker] Invalid record.. " + fileName);
-			return false;
+			return true;
 
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);

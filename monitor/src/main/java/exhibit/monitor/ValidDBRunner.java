@@ -15,7 +15,7 @@ public class ValidDBRunner implements Runnable {
 	@Override
 	public void run() {
 		Connection conn = null;
-		// PreparedStatement stmt = null;
+		PreparedStatement stmt = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false", "root",
@@ -24,7 +24,7 @@ public class ValidDBRunner implements Runnable {
 					+ " file_name VARCHAR(255), " + " date VARCHAR(255), " + " record_number INTEGER, "
 					+ " record VARCHAR(255), " + " PRIMARY KEY ( id ))";
 
-			queryStatement(conn, sql);
+			queryStatement(conn, stmt, sql);
 
 			synchronized (ApplicationContext.validRecords) {
 				while (ApplicationContext.validRecords.isEmpty()) {
@@ -32,7 +32,7 @@ public class ValidDBRunner implements Runnable {
 				}
 				for (Record record : ApplicationContext.validRecords) {
 					String query = "insert into valid_records (file_name, date, record_number, record) values (?, ?, ?, ?)";
-					queryStatement(conn, record, query);
+					stmt = queryStatement(conn, stmt, record, query);
 				}
 			}
 		} catch (Exception e) {
@@ -43,8 +43,7 @@ public class ValidDBRunner implements Runnable {
 		}
 	}
 
-	private void queryStatement(Connection conn, Record record, String query) {
-		PreparedStatement stmt = null;
+	private PreparedStatement queryStatement(Connection conn, PreparedStatement stmt, Record record, String query) {
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setString(1, record.getFileName());
@@ -66,10 +65,10 @@ public class ValidDBRunner implements Runnable {
 				// e.printStackTrace();
 			}
 		}
+		return stmt;
 	}
 
-	private void queryStatement(Connection conn, String sql) {
-		PreparedStatement stmt = null;
+	private void queryStatement(Connection conn, PreparedStatement stmt, String sql) {
 		try {
 			stmt = conn.prepareStatement(sql);
 			stmt.execute();

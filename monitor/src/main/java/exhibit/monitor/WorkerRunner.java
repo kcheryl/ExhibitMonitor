@@ -8,15 +8,19 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class WorkerRunner implements Runnable {
 	private String fileName;
 	private static final String FILE_DIR = "D:/ExhibitMonitorData/Process/";
 	private static final String COMMA = ",";
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("dd/MM/yyyy");
+	private Logger logger;
 
 	public WorkerRunner(String fileName) {
 		this.fileName = fileName;
+		logger = Logger.getLogger("Exception");
 	}
 
 	@Override
@@ -29,7 +33,7 @@ public class WorkerRunner implements Runnable {
 
 				String line = "";
 				br = new BufferedReader(new FileReader(FILE_DIR + fileName));
-				br.readLine();
+				line = br.readLine(); // discard first line (column headings)
 
 				int count = 1;
 				while ((line = br.readLine()) != null) {
@@ -39,7 +43,8 @@ public class WorkerRunner implements Runnable {
 				br.close();
 				// notify DB thread
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.log(Level.FINEST, e.getMessage(), e);
+				// e.printStackTrace();
 			}
 		} else {
 			BufferedReader br;
@@ -49,7 +54,7 @@ public class WorkerRunner implements Runnable {
 
 				String line = "";
 				br = new BufferedReader(new FileReader(FILE_DIR + fileName));
-				br.readLine();
+				line = br.readLine(); // discard first line (column headings)
 
 				int count = 1;
 				while ((line = br.readLine()) != null) {
@@ -59,7 +64,8 @@ public class WorkerRunner implements Runnable {
 				br.close();
 				// notify DB thread
 			} catch (Exception e) {
-				e.printStackTrace();
+				logger.log(Level.FINEST, e.getMessage(), e);
+				// e.printStackTrace();
 			}
 		}
 	}
@@ -93,7 +99,8 @@ public class WorkerRunner implements Runnable {
 			return false;
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.FINEST, e.getMessage(), e);
+			// e.printStackTrace();
 		}
 		return false;
 	}

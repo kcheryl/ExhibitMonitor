@@ -2,18 +2,28 @@ package exhibit.monitor;
 
 import java.sql.*;
 import java.util.Calendar;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class InvalidDBRunner implements Runnable {
+	private Logger logger;
+
+	public InvalidDBRunner() {
+		logger = Logger.getLogger("Exception");
+	}
+
 	@Override
 	public void run() {
+		Connection conn = null;
+		PreparedStatement stmt = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false", "root",
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false", "root",
 					new Password().getPassword());
 			String sql = "CREATE TABLE INVALID_RECORDS " + "(id INTEGER not NULL AUTO_INCREMENT, "
 					+ " file_name VARCHAR(255), " + " date VARCHAR(255), " + " record_number INTEGER, "
 					+ " record VARCHAR(255), " + " PRIMARY KEY ( id ))";
-			PreparedStatement stmt = conn.prepareStatement(sql);
+			stmt = conn.prepareStatement(sql);
 			stmt.execute();
 
 			synchronized (ApplicationContext.invalidRecords) {
@@ -34,13 +44,39 @@ public class InvalidDBRunner implements Runnable {
 					stmt.setString(4, record.getRecord());
 					stmt.execute();
 				}
-				stmt.close();
-				conn.close();
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			logger.log(Level.FINEST, e.getMessage(), e);
+			// e.printStackTrace();
+		} finally {
+			close(stmt);
+			close(conn);
 		}
 
+	}
+
+	private void close(Connection conn) {
+		if (conn == null) {
+			return;
+		}
+		try {
+			conn.close();
+		} catch (Exception e) {
+			logger.log(Level.FINEST, e.getMessage(), e);
+			// e.printStackTrace();
+		}
+	}
+
+	private void close(PreparedStatement conn) {
+		if (conn == null) {
+			return;
+		}
+		try {
+			conn.close();
+		} catch (Exception e) {
+			logger.log(Level.FINEST, e.getMessage(), e);
+			// e.printStackTrace();
+		}
 	}
 
 }

@@ -26,12 +26,11 @@ public class OutputRunner implements Runnable {
 	@Override
 	public void run() {
 		Connection conn = null;
-		FileWriter fw = null;
-		try {
-			// create output file
-			System.out.println("[OutputRunner] Creating output file.. " + fileName);
-			String fileDir = FILE_DIR + fileName;
-			fw = new FileWriter(fileDir);
+
+		// create output file
+		System.out.println("[OutputRunner] Creating output file.. " + fileName);
+		String fileDir = FILE_DIR + fileName;
+		try (FileWriter fw = new FileWriter(fileDir)) {
 
 			// write headings to the file (take from xml)
 			System.out.println("[OutputRunner] Writing to file.. " + fileName);
@@ -43,7 +42,7 @@ public class OutputRunner implements Runnable {
 				Entry<String, String> element = fieldSetIterator.next();
 				if (count == size) {
 					fw.append(element.getKey());
-					fw.append('\n');
+					fw.append("\r\n");
 				} else {
 					fw.append(element.getKey());
 					fw.append(',');
@@ -65,31 +64,27 @@ public class OutputRunner implements Runnable {
 			query += ";";
 
 			// write database content to file
-			PreparedStatement stmt = conn.prepareStatement(query);
-			ResultSet rs = stmt.executeQuery();
-			while (rs.next()) {
-				String name = rs.getString(2);
-				if (dependencyList.contains(name)) {
-					fw.append(rs.getString(5));
-					fw.append('\n');
-				}
-			}
+			queryDatabase(conn, fw, query);
+
 		} catch (Exception e) {
 			// e.printStackTrace();
 			logger.log(Level.FINEST, e.getMessage(), e);
 		} finally {
 			close(conn);
-			close(fw);
 			System.out.println("Run Completed!");
 		}
 	}
 
-	private void close(FileWriter fw) {
-		if (fw == null) {
-			return;
-		}
-		try {
-			fw.close();
+	private void queryDatabase(Connection conn, FileWriter fw, String query) {
+		try (PreparedStatement stmt = conn.prepareStatement(query)) {
+			ResultSet rs = stmt.executeQuery();
+			while (rs.next()) {
+				String name = rs.getString(2);
+				if (dependencyList.contains(name)) {
+					fw.append(rs.getString(5));
+					fw.append("\r\n");
+				}
+			}
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
 			// e.printStackTrace();

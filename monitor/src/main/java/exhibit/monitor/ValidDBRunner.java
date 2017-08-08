@@ -15,7 +15,6 @@ public class ValidDBRunner implements Runnable {
 	@Override
 	public void run() {
 		Connection conn = null;
-		// PreparedStatement stmt = null;
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
 			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sakila?useSSL=false", "root",
@@ -54,6 +53,7 @@ public class ValidDBRunner implements Runnable {
 			stmt.setString(4, record.getRecord());
 			stmt.execute();
 		} catch (Exception e) {
+			logger.log(Level.FINEST, e.getMessage(), e);
 			// e.printStackTrace();
 		}
 	}
@@ -62,6 +62,7 @@ public class ValidDBRunner implements Runnable {
 		try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 			stmt.execute();
 		} catch (Exception e) {
+			logger.log(Level.FINEST, e.getMessage(), e);
 			// e.printStackTrace();
 		}
 	}

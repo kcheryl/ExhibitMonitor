@@ -34,6 +34,7 @@ public class InvalidDBRunner implements Runnable {
 					String query = "insert into invalid_records (file_name, date, record_number, record) values (?, ?, ?, ?)";
 					queryStatement(conn, record, query);
 				}
+				System.out.println("[InvalidDB] Inserting into invalid records..");
 			}
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);

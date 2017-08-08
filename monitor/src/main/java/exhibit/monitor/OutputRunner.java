@@ -67,7 +67,6 @@ public class OutputRunner implements Runnable {
 			queryDatabase(conn, fw, query);
 
 		} catch (Exception e) {
-			// e.printStackTrace();
 			logger.log(Level.FINEST, e.getMessage(), e);
 		} finally {
 			close(conn);
@@ -87,7 +86,6 @@ public class OutputRunner implements Runnable {
 			}
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 
@@ -99,7 +97,6 @@ public class OutputRunner implements Runnable {
 			conn.close();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 }

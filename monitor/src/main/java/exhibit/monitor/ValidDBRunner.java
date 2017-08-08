@@ -55,7 +55,6 @@ public class ValidDBRunner implements Runnable {
 			stmt.execute();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 
@@ -64,7 +63,6 @@ public class ValidDBRunner implements Runnable {
 			stmt.execute();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 
@@ -76,7 +74,6 @@ public class ValidDBRunner implements Runnable {
 			conn.close();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 }

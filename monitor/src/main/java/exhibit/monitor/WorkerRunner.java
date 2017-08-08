@@ -33,8 +33,7 @@ public class WorkerRunner implements Runnable {
 				String dateStr = ApplicationContext.inputFileMap.get(fileName);
 				Date date = DATE_FORMAT.parse(dateStr);
 
-				String line = "";
-				line = br.readLine(); // discard first line (column headings)
+				String line = br.readLine(); // discard first line (headings)
 
 				int count = 1;
 				while ((line = br.readLine()) != null) {
@@ -46,7 +45,6 @@ public class WorkerRunner implements Runnable {
 
 			} catch (Exception e) {
 				logger.log(Level.FINEST, e.getMessage(), e);
-				// e.printStackTrace();
 			}
 		} else {
 			checkValidRow();
@@ -93,7 +91,6 @@ public class WorkerRunner implements Runnable {
 				count++;
 			}
 		} catch (Exception e) {
-			// e.printStackTrace();
 			logger.log(Level.FINEST, e.getMessage(), e);
 			return false;
 		}
@@ -104,8 +101,8 @@ public class WorkerRunner implements Runnable {
 		String line = "";
 		try (BufferedReader br = new BufferedReader(new FileReader(FILE_DIR + fileName))) {
 			// get date from inputFileMap with filename
-			String dateStr = ApplicationContext.inputFileMap.get(fileName);
-			Date recordDate = DATE_FORMAT.parse(dateStr);
+			String date = ApplicationContext.inputFileMap.get(fileName);
+			Date recordDate = DATE_FORMAT.parse(date);
 
 			// read first line of csv (headings) and ignore
 			line = br.readLine();
@@ -129,16 +126,19 @@ public class WorkerRunner implements Runnable {
 					while (iteratorContent.hasNext()) {
 						Entry<String, String> element = iteratorContent.next();
 						try {
-							if (element.getValue().equalsIgnoreCase("integer")) {
+							String integerStr = "integer";
+							if (element.getValue().equalsIgnoreCase(integerStr)) {
 								@SuppressWarnings("unused")
 								int num = Integer.parseInt(fieldArr[fieldCount]);
 
 							}
-							if (element.getValue().equalsIgnoreCase("double")) {
+							String doubleStr = "double";
+							if (element.getValue().equalsIgnoreCase(doubleStr)) {
 								@SuppressWarnings("unused")
 								double num = Double.parseDouble(fieldArr[fieldCount]);
 							}
-							if (element.getValue().equalsIgnoreCase("date")) {
+							String dateStr = "date";
+							if (element.getValue().equalsIgnoreCase(dateStr)) {
 								String[] parts = fieldArr[fieldCount].split("/");
 								Calendar cal = Calendar.getInstance();
 								cal.set(Integer.parseInt(parts[2]), Integer.parseInt(parts[1]),
@@ -146,11 +146,10 @@ public class WorkerRunner implements Runnable {
 							}
 
 						} catch (Exception e) {
-							// e.printStackTrace();
-							logger.log(Level.FINEST, e.getMessage(), e);
-							isInvalid = true;
 							ApplicationContext.invalidRecords.add(new Record(fileName, recordDate, rowCount, line));
+							isInvalid = true;
 							isInvalidRecord = true;
+							logger.log(Level.FINEST, e.getMessage(), e);
 						} finally {
 							fieldCount++;
 						}
@@ -171,7 +170,6 @@ public class WorkerRunner implements Runnable {
 			}
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 }

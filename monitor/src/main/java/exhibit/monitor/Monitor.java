@@ -7,9 +7,17 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Monitor {
-	public static void main(String[] args) throws InterruptedException {
+	private static Logger logger;
+
+	private Monitor() {
+		logger = Logger.getLogger("Exception");
+	}
+
+	public static void main(String[] args) {
 		XMLParser parser = new XMLParser();
 		parser.init();
 
@@ -21,12 +29,20 @@ public class Monitor {
 		Thread invalidDatabase = new Thread(new InvalidDBRunner());
 		invalidDatabase.start();
 
-		Thread.sleep(1000);
+		try {
+			Thread.sleep(1000);
+		} catch (Exception e) {
+			logger.log(Level.FINEST, e.getMessage(), e);
+		}
+
 		// go through xmlMap(FileDetails, Map) and retrieve "output" type
 		Iterator<FileDetails> iterator = ApplicationContext.xmlMap.keySet().iterator();
 		while (iterator.hasNext()) {
+
 			FileDetails element = iterator.next();
-			if (element.getType().equalsIgnoreCase("output")) {
+			String output = "output";
+			if (element.getType().equalsIgnoreCase(output)) {
+
 				// process time of output file
 				String[] parts = element.getTime().split(":");
 				Calendar cal = Calendar.getInstance();

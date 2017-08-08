@@ -38,7 +38,6 @@ public class InvalidDBRunner implements Runnable {
 			}
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		} finally {
 			close(conn);
 		}
@@ -57,7 +56,6 @@ public class InvalidDBRunner implements Runnable {
 			stmt.execute();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 
@@ -66,7 +64,6 @@ public class InvalidDBRunner implements Runnable {
 			stmt.execute();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 
@@ -78,7 +75,6 @@ public class InvalidDBRunner implements Runnable {
 			conn.close();
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 }

@@ -70,7 +70,8 @@ public class PollerRunner implements Runnable {
 			while (iterator.hasNext()) {
 				Entry<FileDetails, Map<String, String>> element = iterator.next();
 				FileDetails details = element.getKey();
-				if (details.getName().equals(file.getName()) && details.getType().equals("input")) {
+				String input = "input";
+				if (details.getName().equals(file.getName()) && details.getType().equals(input)) {
 
 					Calendar cal = Calendar.getInstance();
 					String[] parts = details.getTime().split(":");
@@ -84,7 +85,6 @@ public class PollerRunner implements Runnable {
 			return false;
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 		return false;
 	}
@@ -96,7 +96,6 @@ public class PollerRunner implements Runnable {
 
 		} catch (Exception e) {
 			logger.log(Level.FINEST, e.getMessage(), e);
-			// e.printStackTrace();
 		}
 	}
 }

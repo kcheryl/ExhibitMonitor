@@ -6,13 +6,13 @@ public class Record {
 	private String fileName;
 	private Date date;
 	private int recordNum;
-	private String record;
+	private String recordStr;
 
-	public Record(String fileName, Date date, int recordNum, String record) {
+	public Record(String fileName, Date date, int recordNum, String recordStr) {
 		this.fileName = fileName;
 		this.date = date;
 		this.recordNum = recordNum;
-		this.record = record;
+		this.recordStr = recordStr;
 	}
 
 	// for checking if the record exist
@@ -45,16 +45,16 @@ public class Record {
 	}
 
 	public String getRecord() {
-		return record;
+		return recordStr;
 	}
 
-	public void setRecord(String record) {
-		this.record = record;
+	public void setRecord(String recordStr) {
+		this.recordStr = recordStr;
 	}
 
 	@Override
 	public String toString() {
-		return "Record [fileName=" + fileName + ", date=" + date + ", recordNum=" + recordNum + ", record=" + record
+		return "Record [fileName=" + fileName + ", date=" + date + ", recordNum=" + recordNum + ", record=" + recordStr
 				+ "]";
 	}
 
